@@ -1,10 +1,7 @@
 import { Video } from "interface/interface";
-import { ObjectId } from "mongodb";
 import {
-  VideoModel,
   createNewVideo,
   deleteVideo_,
-  // deleteVideo_,
   getAllVideos,
   getVideoById_,
 } from "../db/video";
@@ -45,10 +42,13 @@ export const getVideoById = async (
   res: express.Response
 ) => {
   try {
-    const id = req.params.id;
+    const id: String = req.params.id;
     console.log(id);
     const video = await getVideoById_(id);
-    return res.status(200).json(video).end();
+    if (video) {
+      return res.status(200).json(video).end();
+    }
+    return res.status(400).json("not found").end();
   } catch (error) {
     console.log(error);
     res.status(400).send(error.message);
@@ -60,8 +60,8 @@ export const deleteVideo = async (
   res: express.Response
 ) => {
   try {
-    const id = req.params.id; // lấy giá trị _id từ request parameters
-    const result = await deleteVideo_(new ObjectId(id)); // gọi hàm xóa video từ db
+    const id: String = req.params.id;
+    const result = await deleteVideo_(id);
     if (result) {
       return res.status(200).json("deleted video successfully").end();
     }
